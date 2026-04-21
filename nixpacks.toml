@@ -1,0 +1,26 @@
+[nixpacks]
+# Node.js with Python for SAM2 segmentation
+NODE_VERSION = "20"
+PYTHON_VERSION = "3.12"
+
+[phases.setup]
+nixPkgs = ["...","python312","python312Packages.pip","openssl","libGL","glib","libgcc","libxext","libxrender","ulauncher","gomp","pkg-config"]
+
+[phases.install]
+commands = [
+    "curl -fsSL https://get.pnpm.io/install.sh | sh",
+    "export PATH=$PATH:/root/.local/share/pnpm",
+    "pnpm install --prefer-offline",
+    "pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu",
+    "pip install numpy scipy opencv-python matplotlib pillow",
+    "pip install hydra-core==1.3.2 omegaconf==2.3.0",
+    "pip install monai nibabel SimpleITK"
+]
+
+[phases.build]
+commands = [
+    "pnpm next build"
+]
+
+[start]
+cmd = "node_modules/.bin/next start -p 3000"

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIfTI 文件格式验证工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 12px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .result.warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .result h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .result p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .result ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        .result li {
+            margin-bottom: 5px;
+        }
+
+        .file-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .file-info strong {
+            color: #333;
+        }
+
+        .technical-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .help-section {
+            background: #f0f2ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .help-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .help-section p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .help-section ul {
+            margin-left: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .help-section li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 NIfTI 文件格式验证工具</h1>
+        <p class="subtitle">快速验证您的文件是否为有效的 .nii.gz 格式</p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">点击选择文件或拖拽文件到此处</div>
+            <div class="upload-hint">仅支持 .nii.gz 格式的文件</div>
+            <input type="file" id="fileInput" accept=".nii.gz">
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="help-section">
+            <h3>📚 什么是 .nii.gz 文件？</h3>
+            <p><strong>.nii.gz</strong> 文件是经过 gzip 压缩的 NIfTI 格式医学影像文件。</p>
+            <p><strong>特点：</strong></p>
+            <ul>
+                <li>✅ 文件必须经过 gzip 压缩（魔数：1f8b）</li>
+                <li>✅ 内部包含有效的 NIfTI 格式数据</li>
+                <li>✅ 通常大小在 10MB - 500MB 之间</li>
+            </ul>
+            <p><strong>如何获取：</strong></p>
+            <ul>
+                <li>从医学影像软件（ITK-SNAP、3D Slicer）导出为 .nii.gz</li>
+                <li>使用 dcm2niix 将 DICOM 转换为 .nii.gz</li>
+                <li>从公开医学影像数据集下载</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const resultDiv = document.getElementById('result');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                validateFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                validateFile(e.target.files[0]);
+            }
+        });
+
+        async function validateFile(file) {
+            resultDiv.style.display = 'none';
+
+            // Check file extension
+            if (!file.name.endsWith('.nii.gz')) {
+                showError('文件扩展名错误', `
+                    <p>文件扩展名必须是 <strong>.nii.gz</strong></p>
+                    <p>当前文件：${file.name}</p>
+                    <p>请确保文件扩展名正确。</p>
+                `);
+                return;
+            }
+
+            // Check file size
+            const fileSizeMB = file.size / (1024 * 1024);
+            if (file.size < 100) {
+                showError('文件太小', `
+                    <p>文件太小（${file.size} 字节），不是有效的 .nii.gz 文件</p>
+                    <p>典型的 MRI 体积文件通常在 10MB - 500MB 之间</p>
+                `);
+                return;
+            }
+
+            // Read and validate file content
+            try {
+                const arrayBuffer = await file.slice(0, 100).arrayBuffer();
+                const bytes = new Uint8Array(arrayBuffer);
+                const magicHex = Array.from(bytes.slice(0, 2)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+                // File info
+                const fileInfo = `
+                    <div class="file-info">
+                        <strong>文件信息：</strong><br>
+                        文件名：${file.name}<br>
+                        文件大小：${fileSizeMB.toFixed(2)} MB (${file.size.toLocaleString()} 字节)<br>
+                        魔数：${magicHex.toUpperCase()}（期望：1F8B）
+                    </div>
+                `;
+
+                // Check gzip magic number
+                if (bytes[0] === 0x1f && bytes[1] === 0x8b) {
+                    showSuccess('✅ 文件格式正确！', `
+                        ${fileInfo}
+                        <p>这是一个有效的 gzip 压缩文件。</p>
+                        <p>您可以将此文件上传到前列腺 MRI 分割系统。</p>
+                    `);
+                } else {
+                    let fileType = '未知格式';
+                    let solution = '';
+
+                    if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47) {
+                        fileType = 'PNG 图片文件';
+                        solution = `
+                            <p><strong>错误原因：</strong></p>
+                            <ul>
+                                <li>这是一个 PNG 图片文件，不是 .nii.gz 文件</li>
+                                <li>文件名被错误地改为 .nii.gz</li>
+                            </ul>
+                            <p><strong>解决方法：</strong></p>
+                            <ul>
+                                <li>不要简单地重命名文件扩展名</li>
+                                <li>确保从医学影像软件导出为 .nii.gz 格式</li>
+                            </ul>
+                        `;
+                    } else if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+                        fileType = 'JPEG 图片文件';
+                        solution = `
+                            <p><strong>错误原因：</strong></p>
+                            <ul>
+                                <li>这是一个 JPEG 图片文件，不是 .nii.gz 文件</li>
+                            </ul>
+                        `;
+                    } else if (bytes[0] === 0x50 && bytes[1] === 0x4b) {
+                        fileType = 'ZIP 压缩文件';
+                        solution = `
+                            <p><strong>错误原因：</strong></p>
+                            <ul>
+                                <li>这是一个 ZIP 文件，可能是未压缩的 NIfTI 文件（.nii）</li>
+                            </ul>
+                            <p><strong>解决方法：</strong></p>
+                            <ul>
+                                <li>使用 gzip 压缩：gzip -c file.nii > file.nii.gz</li>
+                                <li>或在 Python 中：nib.save(nib.load('file.nii'), 'file.nii.gz')</li>
+                            </ul>
+                        `;
+                    } else {
+                        solution = `
+                            <p><strong>错误原因：</strong></p>
+                            <ul>
+                                <li>文件不是有效的 gzip 压缩格式</li>
+                                <li>文件可能已损坏或格式不正确</li>
+                            </ul>
+                        `;
+                    }
+
+                    showError(`❌ 无效的 .nii.gz 文件（检测到：${fileType}）`, `
+                        ${fileInfo}
+                        ${solution}
+                        <div class="technical-details">
+                            <strong>技术细节：</strong><br>
+                            前 20 字节（十六进制）：${Array.from(bytes.slice(0, 20)).map(b => b.toString(16).padStart(2, '0')).join(' ').toUpperCase()}
+                        </div>
+                    `);
+                }
+            } catch (error) {
+                showError('读取文件失败', `
+                    <p>无法读取文件内容：${error.message}</p>
+                    <p>请尝试重新选择文件。</p>
+                `);
+            }
+        }
+
+        function showSuccess(title, content) {
+            resultDiv.className = 'result success';
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                ${content}
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function showError(title, content) {
+            resultDiv.className = 'result error';
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                ${content}
+            `;
+            resultDiv.style.display = 'block';
+        }
+
+        function showWarning(title, content) {
+            resultDiv.className = 'result warning';
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                ${content}
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "pnpm install && pnpm next build",
+    "installCommand": "pnpm install --prefer-offline"
+  },
+  "run": {
+    "command": "node_modules/.bin/next start -p 3000"
+  },
+  "port": 3000,
+  "healthcheckPath": "/",
+  "healthcheckTimeout": 30
+}
