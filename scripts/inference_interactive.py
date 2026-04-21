@@ -29,7 +29,21 @@ PROJECT_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), 'Seg-code-try2region-noi
 # Add to Python path
 sys.path.insert(0, PROJECT_DIR)
 
-# Import config after setting path
+# Initialize Hydra configuration BEFORE importing sam2_train modules
+# This is critical for Railway deployment
+from hydra import initialize_config_module, compose
+from omegaconf import OmegaConf
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+
+# Initialize Hydra config module
+print("[DEBUG] Initializing Hydra config module...", file=sys.stderr)
+initialize_config_module("sam2_train", version_base="1.2")
+print("[DEBUG] Hydra config module initialized", file=sys.stderr)
+
+# Import config after setting path and initializing Hydra
 import cfg
 
 # For nii.gz loading
@@ -341,6 +355,17 @@ def load_model(checkpoint_path: str = None, use_medical: bool = True):
 
         # Import build function
         from sam2_train.build_sam import build_sam2_video_predictor
+
+        # Ensure Hydra is initialized
+        print(f"[DEBUG] sys.path: {sys.path[:3]}", file=sys.stderr)
+        print(f"[DEBUG] Importing sam2_train modules...", file=sys.stderr)
+        
+        # Test import
+        try:
+            from sam2_train import sam2_video_predictor
+            print(f"[DEBUG] sam2_video_predictor module: {dir(sam2_video_predictor)}", file=sys.stderr)
+        except Exception as e:
+            print(f"[DEBUG] Import error: {e}", file=sys.stderr)
 
         # Build model directly without going through get_network
         print(f"[INFO] Building SAM2 predictor from {SAM_CHECKPOINT}", file=sys.stderr)
