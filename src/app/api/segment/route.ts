@@ -128,8 +128,8 @@ async function runPythonSegmentation(
       USE_MEDICAL_SAM2: useMedical ? 'true' : 'false',
     };
 
-    // Set timeout (2 minutes for model loading + inference)
-    const TIMEOUT_MS = 120000;
+    // Set timeout (5 minutes for model loading + inference on CPU)
+    const TIMEOUT_MS = 300000;
 
     // Use inference_interactive.py for multi-box support
     // Pass data through stdin instead of command line argument to avoid E2BIG error
