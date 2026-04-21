@@ -27,6 +27,7 @@ RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/c
 RUN pip install numpy scipy opencv-python matplotlib pillow
 RUN pip install hydra-core==1.3.2 omegaconf==2.3.0
 RUN pip install monai nibabel SimpleITK pydicom
+RUN pip install tqdm
 
 # Install pnpm
 RUN npm install -g pnpm
