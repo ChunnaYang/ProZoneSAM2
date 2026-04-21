@@ -5,5 +5,14 @@
 # LICENSE file in the root directory of this source tree.
 
 from hydra import initialize_config_module
+import os
 
-initialize_config_module("sam2_train", version_base="1.2")
+# Only initialize Hydra if not already initialized and not in subprocess
+# Check if already initialized by looking for Hydra's config
+if not os.environ.get('HYDRA_INITIALIZED'):
+    try:
+        initialize_config_module("sam2_train", version_base="1.2")
+        os.environ['HYDRA_INITIALIZED'] = '1'
+    except Exception:
+        # May already be initialized in parent process
+        pass
