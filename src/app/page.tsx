@@ -616,7 +616,7 @@ export default function MedicalSAMDemo() {
                         {result.masks.PZ && (
                           <div className="flex items-center space-x-2">
                             <span className="inline-block h-3 w-3 rounded bg-blue-500"></span>
-                            <span>PZ (外周带) - 蓝色</span>
+                            <span>PZ (外周区) - 蓝色</span>
                           </div>
                         )}
                       </div>
