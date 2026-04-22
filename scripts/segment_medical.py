@@ -760,7 +760,7 @@ def main():
 
     except Exception as e:
         result = {"success": False, "error": str(e)}
-        print(json.dumps(result), file=sys.stderr)
+        print(json.dumps(result))
         sys.exit(1)
 
 
