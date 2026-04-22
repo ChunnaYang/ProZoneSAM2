@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'ProZoneSAM2 - 前列腺医学图像分割',
+    default: 'ProZoneSAM2 - 前列腺区域分割',
     template: '%s | ProZoneSAM2',
   },
   description:
