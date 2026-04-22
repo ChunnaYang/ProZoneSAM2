@@ -602,8 +602,10 @@ def segment_image(image, boxes, model):
         return create_mock_masks(image, boxes), True
 
 
-def create_mock_masks(boxes, image_data=None):
+def create_mock_masks(image_data=None, boxes=None):
     """Create mock masks for demonstration purposes."""
+    if boxes is None:
+        boxes = []
     masks_dict = {}
 
     for box in boxes:
@@ -668,7 +670,7 @@ def main():
 
     except Exception as e:
         result = {"success": False, "error": str(e)}
-        print(json.dumps(result), file=sys.stderr)
+        print(json.dumps(result))
         sys.exit(1)
 
 
