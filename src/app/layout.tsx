@@ -14,22 +14,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: '新应用 | 扣子编程',
-    template: '%s | 扣子编程',
+    default: 'ProZoneSAM2 - 前列腺医学图像分割',
+    template: '%s | ProZoneSAM2',
   },
   description:
-    '扣子编程是一款一站式云端 Vibe Coding 开发平台。通过对话轻松构建智能体、工作流和网站，实现从创意到上线的无缝衔接。',
+    'ProZoneSAM2 - 基于 SAM2 的前列腺医学图像交互式分割工具，支持全腺体 (WG)、中央腺体 (CG) 和外周带 (PZ) 区域分割',
   keywords: [
-    '扣子编程',
-    'Coze Code',
-    'Vibe Coding',
-    'AI 编程',
-    '智能体搭建',
-    '工作流搭建',
-    '网站搭建',
-    '网站部署',
-    '全栈开发',
-    'AI 工程师',
+    'ProZoneSAM2',
+    'SAM2',
+    '前列腺分割',
+    '医学图像分割',
+    'AI 分割',
+    '前列腺',
+    'MRI',
+    '全腺体',
+    '中央腺体',
+    '外周带',
   ],
   authors: [{ name: 'Coze Code Team', url: 'https://code.coze.cn' }],
   generator: 'Coze Code',
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
   //   icon: '',
   // },
   openGraph: {
-    title: '扣子编程 | 你的 AI 工程师已就位',
+    title: 'ProZoneSAM2 - 前列腺区域分割',
     description:
-      '我正在使用扣子编程 Vibe Coding，让创意瞬间上线。告别拖拽，拥抱心流。',
+      '基于 SAM2 的前列腺医学图像交互式分割工具，支持全腺体、中央腺体和外周带区域分割',
     url: 'https://code.coze.cn',
     siteName: '扣子编程',
     locale: 'zh_CN',
