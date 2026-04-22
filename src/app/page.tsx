@@ -3,14 +3,7 @@
 import { useState, useRef, MouseEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Upload, RefreshCw, Trash2, Plus, Images } from 'lucide-react';
+import { Upload, RefreshCw, Trash2, Plus } from 'lucide-react';
 
 interface Box {
   id: string;
@@ -42,7 +35,6 @@ export default function MedicalSAMDemo() {
   const [result, setResult] = useState<SegmentationResult | null>(null);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [useMedicalMode, setUseMedicalMode] = useState(true);
-  const [sampleDialogOpen, setSampleDialogOpen] = useState(false);
   const [sampleImages] = useState<string[]>([
     '/assets/samples/sample1.png',
     '/assets/samples/sample2.png',
@@ -72,7 +64,6 @@ export default function MedicalSAMDemo() {
       setResult(null);
       setStartPoint(null);
       setCurrentBox(null);
-      setSampleDialogOpen(false); // Close dialog after selection
     };
     sampleImage.onerror = () => {
       console.error('Failed to load sample image:', path);
@@ -315,58 +306,6 @@ export default function MedicalSAMDemo() {
                     </span>
                   </Button>
                 </label>
-
-                {/* Sample Image Loader Dialog */}
-                <Dialog open={sampleDialogOpen} onOpenChange={setSampleDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="w-full h-9 border-green-300 hover:border-green-400 hover:bg-green-50 dark:border-green-700 dark:hover:bg-green-950/30 transition-all text-green-700 dark:text-green-400"
-                    >
-                      <Images className="mr-2 h-4 w-4" />
-                      加载示例图像
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2 text-lg font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                        <Images className="h-5 w-5 text-green-600" />
-                        选择示例图像
-                      </DialogTitle>
-                    </DialogHeader>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 -mt-2">
-                      点击下方任意示例图像以快速加载并开始分割测试
-                    </p>
-                    <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 max-h-[60vh] overflow-y-auto py-1 pr-1">
-                      {sampleImages.map((path, index) => (
-                        <button
-                          key={path}
-                          onClick={() => loadSampleImage(path)}
-                          className="group relative overflow-hidden rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-green-400 dark:hover:border-green-500 transition-all bg-white dark:bg-slate-800 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
-                        >
-                          <img
-                            src={path}
-                            alt={`示例图像 ${index + 1}`}
-                            className="h-24 w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLImageElement).style.display = 'none';
-                              const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
-                              if (placeholder) placeholder.style.display = 'flex';
-                            }}
-                          />
-                          <div className="hidden h-24 w-full items-center justify-center bg-slate-100 dark:bg-slate-700">
-                            <span className="text-xs text-slate-400">样本 {index + 1}</span>
-                          </div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-2 py-1.5">
-                            <span className="text-xs font-semibold text-white">样本 {index + 1}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
                 {image && (
                   <Button
                     variant="ghost"
