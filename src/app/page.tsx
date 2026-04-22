@@ -35,15 +35,6 @@ export default function MedicalSAMDemo() {
   const [result, setResult] = useState<SegmentationResult | null>(null);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null);
   const [useMedicalMode, setUseMedicalMode] = useState(true);
-  const [sampleImages] = useState<string[]>([
-    '/assets/samples/sample1.png',
-    '/assets/samples/sample2.png',
-    '/assets/samples/sample3.png',
-    '/assets/samples/sample4.png',
-    '/assets/samples/sample5.png',
-    '/assets/samples/sample6.png',
-    '/assets/samples/sample7.png',
-  ]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -55,21 +46,21 @@ export default function MedicalSAMDemo() {
   const generateBoxId = () => `box-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   // Load sample image for quick testing
-  const loadSampleImage = (path: string = '/assets/test_image.png') => {
+  const loadSampleImage = () => {
     const sampleImage = new Image();
     sampleImage.onload = () => {
       setImageDimensions({ width: sampleImage.width, height: sampleImage.height });
-      setImage(path);
+      setImage('/assets/test_image.png');
       setBoxes([]); // Clear all boxes
       setResult(null);
       setStartPoint(null);
       setCurrentBox(null);
     };
     sampleImage.onerror = () => {
-      console.error('Failed to load sample image:', path);
+      console.error('Failed to load sample image');
       alert('Failed to load sample image');
     };
-    sampleImage.src = path;
+    sampleImage.src = '/assets/test_image.png';
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -319,47 +310,6 @@ export default function MedicalSAMDemo() {
               </div>
             </Card>
 
-            {/* Sample Images Section */}
-            <Card className="p-5 bg-gradient-to-br from-white to-green-50/50 dark:from-slate-900 dark:to-green-950/20 border-green-200 dark:border-green-800">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1 h-5 bg-gradient-to-b from-green-500 to-teal-500 rounded-full"></div>
-                <h2 className="text-base font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent">
-                  示例图像
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {sampleImages.map((path, index) => (
-                  <button
-                    key={path}
-                    onClick={() => loadSampleImage(path)}
-                    className="group relative overflow-hidden rounded-lg border-2 border-green-200 dark:border-green-800 hover:border-green-400 dark:hover:border-green-600 transition-all bg-white dark:bg-slate-800 hover:shadow-md"
-                  >
-                    <img
-                      src={path}
-                      alt={`示例 ${index + 1}`}
-                      className="h-16 w-full object-cover transition-transform group-hover:scale-105"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
-                        const placeholder = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (placeholder) placeholder.style.display = 'flex';
-                      }}
-                    />
-                    <div
-                      className="hidden h-16 w-full items-center justify-center bg-slate-100 dark:bg-slate-700"
-                    >
-                      <span className="text-xs text-slate-400">样本 {index + 1}</span>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-1.5 py-1">
-                      <span className="text-xs font-medium text-white">样本 {index + 1}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-              <p className="mt-2 text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
-                💡 点击示例图像快速加载进行测试
-              </p>
-            </Card>
-
             {/* Box Type Selection */}
             <Card className="p-5 bg-gradient-to-br from-white to-orange-50/50 dark:from-slate-900 dark:to-orange-950/20 border-orange-200 dark:border-orange-800">
               <div className="flex items-center gap-2 mb-3">
@@ -369,7 +319,6 @@ export default function MedicalSAMDemo() {
                 </h2>
               </div>
               <div className="space-y-2">
-
                 <label className="flex items-center space-x-3 p-2.5 rounded-lg border-2 cursor-pointer transition-all hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 dark:border-blue-900"
                   style={{
                     borderColor: selectedBoxType === 'WG' ? 'rgba(59, 130, 246, 0.5)' : 'rgba(59, 130, 246, 0.2)',
