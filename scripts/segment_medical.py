@@ -296,9 +296,9 @@ def segment_image(
         if image_np.max() > 1.0:
             image_np = image_np / 255.0
 
-        # Resize image to model's expected input size (512x512)
-        # Reduced from 1024x1024 to 512x512 for faster CPU inference (~4x speedup)
-        target_size = 512
+        # Resize image to model's expected input size (1024x1024)
+        # Restored to 1024x1024 — model was trained at this resolution; 512x512 breaks segmentation accuracy
+        target_size = 1024
         print(f"[INFO] Resizing image from {image_np.shape} to ({target_size}, {target_size})", file=sys.stderr)
         from PIL import Image as PILImage
         image_pil = PILImage.fromarray((image_np * 255).astype(np.uint8))
@@ -331,7 +331,7 @@ def segment_image(
         has_cg = len(cg_boxes) > 0
 
         # Calculate scale factor for bbox coordinates
-        # Original image size to target size (512)
+        # Original image size to target size (1024)
         orig_H, orig_W = image.shape[0], image.shape[1]
         scale_factor = target_size / max(orig_H, orig_W)
         print(f"[INFO] Scale factor for bbox coordinates: {scale_factor}", file=sys.stderr)
