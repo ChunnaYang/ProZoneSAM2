@@ -463,8 +463,8 @@ def segment_image(image, boxes, model):
         if image_np.max() > 1.0:
             image_np = image_np / 255.0
 
-        # Resize to model's expected input size (512x512)
-        target_size = 512
+        # Resize to model's expected input size (1024x1024)
+        target_size = 1024
         print(f"[INFO] Resizing image from {image_np.shape} to ({target_size}, {target_size})", file=sys.stderr)
         from PIL import Image as PILImage
         image_pil = PILImage.fromarray((image_np * 255).astype(np.uint8))
